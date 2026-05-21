@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AI工具箱 | 智能对话与创作中心</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        <!-- 头部 -->
+        <header class="flex flex-wrap justify-between items-center mb-8 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-robot text-white text-xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">AI工具箱</h1>
+                <span class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">支持MIMO Token</span>
+            </div>
+            <div class="flex items-center space-x-3 mt-3 sm:mt-0">
+                <div class="flex items-center bg-white dark:bg-gray-800 rounded-full px-3 py-1 shadow-sm">
+                    <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                    <span id="totalTokens" class="font-mono font-bold text-gray-700 dark:text-gray-200">0</span>
+                    <span class="text-xs text-gray-500 ml-1">Tokens</span>
+                </div>
+                <button id="themeToggle" class="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:scale-105 transition">
+                    <i class="fas fa-moon text-gray-700 dark:text-yellow-300 dark:hidden"></i>
+                    <i class="fas fa-sun text-yellow-500 hidden dark:inline-block"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 配置面板 -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-5 mb-6 border border-gray-100 dark:border-gray-700">
+            <div class="flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-sliders-h text-blue-500"></i>
+                    <h3 class="font-semibold text-gray-700 dark:text-gray-200">API 配置</h3>
+                </div>
+                <button id="saveConfigBtn" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-1.5 rounded-lg transition flex items-center gap-2">
+                    <i class="fas fa-save"></i> 保存配置
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">API Key</label>
+                    <input type="password" id="apiKeyInput" placeholder="sk-..." class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">API Base URL</label>
+                    <input type="text" id="baseUrlInput" placeholder="https://api.openai.com" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">模型名称</label>
+                    <input type="text" id="modelInput" placeholder="gpt-3.5-turbo" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 text-sm">
+                </div>
+            </div>
+            <div class="text-xs text-gray-400 mt-3 flex items-center">
+                <i class="fas fa-info-circle mr-1"></i> 配置将保存在浏览器中，数据仅用于本地API调用
+            </div>
+        </div>
+
+        <!-- 双栏布局 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 左侧: 对话区域 -->
+            <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden flex flex-col h-[600px] border border-gray-100 dark:border-gray-700">
+                <div class="bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-comments text-blue-500"></i>
+                        <span class="font-medium">AI 智能对话</span>
+                    </div>
+                    <button id="clearChatBtn" class="text-xs text-red-500 hover:text-red-600"><i class="fas fa-trash-alt mr-1"></i>清空记录</button>
+                </div>
+                <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                    <div class="flex space-x-2">
+                        <textarea id="chatInput" rows="2" placeholder="输入消息，按 Ctrl+Enter 发送..." class="flex-1 resize-none border rounded-xl px-4 py-2 dark:bg-gray-800 dark:border-gray-600 focus:ring-2 focus:ring-blue-400 outline-none"></textarea>
+                        <button id="sendChatBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-5 rounded-xl transition flex items-center justify-center">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧: 工具集 -->
+            <div class="space-y-5">
+                <!-- 情感分析卡片 -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4">
+                    <div class="flex items-center space-x-2 mb-3">
+                        <i class="fas fa-smile-wink text-purple-500"></i>
+                        <h3 class="font-semibold">情感分析</h3>
+                    </div>
+                    <textarea id="sentimentText" rows="2" placeholder="输入文本，分析情感倾向..." class="w-full border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 text-sm"></textarea>
+                    <div class="flex justify-between mt-2">
+                        <button id="analyzeBtn" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-1.5 rounded-lg text-sm transition">分析</button>
+                        <span id="sentimentResult" class="text-sm text-gray-600 dark:text-gray-300 self-center"></span>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-2" id="sentimentTokens"></div>
+                </div>
+
+                <!-- 文本摘要卡片 -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4">
+                    <div class="flex items-center space-x-2 mb-3">
+                        <i class="fas fa-compress-alt text-green-500"></i>
+                        <h3 class="font-semibold">智能摘要</h3>
+                    </div>
+                    <textarea id="summaryText" rows="2" placeholder="输入长文本，获取核心摘要..." class="w-full border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 text-sm"></textarea>
+                    <div class="flex justify-between mt-2">
+                        <button id="summarizeBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm transition">生成摘要</button>
+                        <span id="summaryResult" class="text-sm text-gray-600 dark:text-gray-300 self-center truncate max-w-[160px]"></span>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-2" id="summaryTokens"></div>
+                </div>
+
+                <!-- 图像生成卡片 -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4">
+                    <div class="flex items-center space-x-2 mb-3">
+                        <i class="fas fa-palette text-pink-500"></i>
+                        <h3 class="font-semibold">图像生成</h3>
+                    </div>
+                    <input id="imagePrompt" type="text" placeholder="描述你想要的画面..." class="w-full border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 text-sm">
+                    <button id="generateImageBtn" class="w-full mt-2 bg-pink-500 hover:bg-pink-600 text-white py-1.5 rounded-lg text-sm transition">✨ 生成图像</button>
+                    <div id="imageResult" class="mt-3 text-center min-h-[100px] rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                        <div class="text-gray-400 text-sm">等待生成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-10 text-center text-xs text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-6">
+            <p>🚀 支持 OpenAI 兼容 API | 对话支持上下文 | Token 用量追踪 | 适配 MIMO 7亿 Token 申请</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
