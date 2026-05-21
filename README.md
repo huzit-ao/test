@@ -22,5 +22,5 @@
 
 ### 1. 克隆项目
 ```bash
-git clone <https://github.com/huzit-ao/webstetrasf.git>
+git clone <https://github.com/huzit-ao/test>
 cd ai-toolkit
